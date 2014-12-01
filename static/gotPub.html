@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ static_url('appJScript.js') }}" type="text/javascript"></script>
+    <style>
+       #title {
+         font-size: 50px;
+         font-family: Trebuchet MS;
+       }
+
+       #stepsToPub {
+         font-family: Trebuchet MS;
+         padding: 5%;
+         font-size: 16px;
+       }
+    </style>
+    
+  </head>
+  <body>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+    	    <h3 id="title">Kaleidoscope</h3>
+          </td>
+          <td>
+    	    <img style="margin-left: 700px;" src="{{ static_url('SAVI-05.svg') }}" height="70%" />
+          </td>
+          <td>
+            <div style="visibility: hidden; margin-left:85%;" class="dropdown" id="name_logout">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+	  	<span id="screen_name"></span>   
+          	<span class="caret"></span>
+  	      </button>
+  	      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="index.html">Log out</a></li>
+  	      </ul>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+          <div id="stepsToPub">
+            <h3 style="font-size: 24px;">In order to start streaming, please setup your VLC player by following the steps shown below</h3>
+            <ol>
+              <li>In the Media, choose "Stream"</li>
+              <li>In the Open Media dialog file tab, click “add” and choose the file you want to stream  and click “Open”</li>
+              <li>At the bottom, click the “Stream” button</li>
+              <li>This opens the “Stream Output” dialog showing the source file you have chosen. Click Next to set destination</li>
+              <li>In “Destinations”, choose “UDP (legacy)” and click the “Add” button</li>
+              <li>In the “Address” box, enter the required multicast address: 224.50.50.50 and set the port to 4444</li>
+              <li>In transcoding options, choose the appropriate settings for your video and PC’s codecs. I chose “Video H.264 + MP3 (MP4)”. I had to set the options by clicking the options (screwdriver and spanner) button immediately to the right of the dropdown. In encapsulation, I chose MPEG-TS. In video codec, I set the bitrate to 4000kb/s</li>
+              <li>Once the options are set, click “Save”. Then click Next for “Option Setup” and select “Stream all elementary streams” then click stream.</li>
+            </ol>
+             <p style="padding-top: 10%">Used reference to setup the VLC player: <a href="http://peakdrive.com/?p=440" target="_blank">http://peakdrive.com/?p=440</a></p>
+          </div>
+  </body>
+</html>

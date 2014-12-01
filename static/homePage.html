@@ -1,0 +1,172 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ static_url('appJScript.js') }}" type="text/javascript"></script>
+    <style>
+       #title {
+         font-size: 50px;
+         font-family: Trebuchet MS;
+       }
+
+       #Pub,#Sub {
+         font-family: Trebuchet MS;
+         padding: 5%;
+         font-size: 16px;
+       }
+
+    </style>
+    
+  </head>
+  <body onload="getName()";>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+    	    <h3 id="title">Kaleidoscope</h3>
+          </td>
+          <td>
+    	    <img style="margin-left: 700px;" src="{{ static_url('SAVI-05.svg') }}" height="70%" />
+          </td>
+          <td>
+            <div style="visibility: hidden; margin-left:70%;" class="dropdown" id="name_logout">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+	  	<span id="screen_name"></span>   
+          	<span class="caret"></span>
+  	      </button>
+  	      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="index.html">Log out</a></li>
+  	      </ul>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+     <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#Pub">Publisher</a></li>
+        <li><a data-toggle="tab" href="#Sub">Subscriber</a></li>
+    </ul>
+    <div id="Pub" class="tab-pane fade in active">
+      <h3>If you want to publish a video, please perform the following steps</h3>
+      <ol>
+        <li>Tweet using the text box shown below</li>
+        <li>A link will be provided after the tweet has been posted on twitter</li>
+        <li>Please click on the link such that more information can be provided in order to setup the VLC player to stream the video</li>
+      </ol>
+      <p>You can tweet using the input box below</p>
+      <input type="text" id="tweet" name="Textbox" maxlength="140" style="width:1000px;"/>
+      <button type="button" id="postTweet" class="btn btn-primary">Tweet</button>
+      <p id="clickMsg" style="visibility: hidden;"> Please click at the following link: </p>
+      <a href="" target="_blank" id="resultPostTweet" ></a>
+    </div>
+    <div id="Sub" class="tab-pane fade"> 
+    	<div id="links"></div>
+    </div>
+  <script>
+
+  // get the username of the user when the page loads  
+  function getName(){  
+    var query = location.search.substr(1); // get the arguments from the url
+    var result = {};
+    query.split("&").forEach(function(part) {
+      var item = part.split("=");
+      result[item[0]] = decodeURIComponent(item[1]);
+    });
+    
+    url = "oauth_token="+result['oauth_token']; // create the url to send it to the web server
+    var ws = new WebSocket("ws://10.23.0.18:8888/name"); // create a new websocket
+    ws.onopen = function() {
+      ws.send(url);
+    };
+
+    ws.onmessage = function (evt) { // this function is called when the data is received from the web server
+      document.getElementById("screen_name").innerHTML = evt.data;  // insert the screen name on the logout drop down
+      document.getElementById("name_logout").style.visibility = "visible"; // make the logout drop down visible
+    };
+ }
+
+  // when the tweet button is clicked, send it to the webserver to post the tweet and receive a link from server. Post the link on the web page 
+  $("#postTweet").click( function(){
+    var query = location.search.substr(1);
+    var result = {};
+    query.split("&").forEach(function(part) {
+      var item = part.split("=");
+      result[item[0]] = decodeURIComponent(item[1]);
+    });
+       
+    var tweet = document.getElementById("tweet").value; // get the contents of the tweet
+    url = "tweet="+tweet+"&oauth_token="+result['oauth_token']; //create the url 
+ 
+    document.getElementById("tweet").innerHTML = "";
+
+    var ws = new WebSocket("ws://10.23.0.18:8888/ws"); //new websocket connection 
+    ws.onopen = function() {
+      ws.send(url);
+    };
+    
+    ws.onmessage = function (evt) { // when you receive the link from the server, post it on the web page
+      document.getElementById("clickMsg").style.visibility = "visible";
+
+      document.getElementById("resultPostTweet").innerHTML = evt.data;
+      document.getElementById("resultPostTweet").href = evt.data+"&oauth_token="+result['oauth_token'];
+    };
+  }); 
+
+  /*
+    When the user presses the subscriber's tab, the user should see the subscriber's links (if available)
+    Note: Needs a lot of cleanup. Firstly, when the links are returned, parse them (separate 'enter' and 'leave' links, and put them as links (not just text).   Currently, doesn't check for duplicate links (tried, but it needs cleanup)
+  */
+  $('.nav-tabs a').click(function (e) {
+    href = $(e.currentTarget).attr('href');
+    if(href == "#Sub"){ // if sub tab is clicked
+       var ws = new WebSocket("ws://10.23.0.18:8888/subLinks"); 
+       ws.onopen = function() {
+        ws.send(url);
+       };
+
+       // This parts needs a lot of cloean up. I wanted to check for duplicate links, but it doesn't work at the moment
+       ws.onmessage = function (evt) {
+         console.log(evt.data);
+         if (evt.data == "None") // If no links are available
+          $("#Sub").append("<p id='noLinks'>No links yet</p>"); // Insert no links to the web page
+         else{
+           var element =  document.getElementById('noLinks'); // check if 'no links' info still shows  
+           if (typeof(element) != 'undefined' || element != null){ // if it does, then remove it 
+              $('noLinks').remove(); 
+            }
+              
+           // This is the part where I try to compare current and past links
+           var links =  document.getElementById('links').innerHTML; // get the element's links
+           console.log("links: "+links);
+           console.log("evt.Data is: "+evt.data)
+           if (links != ""){ // if links exist
+             if (links.indexOf(evt.data) == -1){ // check if current data is equal to previous data (** doesn't work)
+               console.log("no match in data");
+               $("#links").append("<p>"+evt.data+"</p>"); // add it, if the links does not exist
+             }
+             else{
+               console.log("already there!"); // don't add the links (This else statement does not get executed at the moment)
+             }
+           }else {
+             
+            console.log("first one");
+            $("#links").append("<p>"+evt.data+"</p>");
+
+          }
+        }
+      }
+   }
+   else {
+      console.log("it's only pub");
+    }
+
+  });
+  
+
+
+  </script>
+  </body>
+</html>

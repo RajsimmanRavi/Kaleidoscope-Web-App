@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ static_url('appJScript.js') }}" type="text/javascript"></script>
+    <style>
+       #title {
+         font-size: 50px;
+         font-family: Trebuchet MS;
+       }
+
+       #stepsForSub {
+         font-family: Trebuchet MS;
+         padding: 5%;
+         font-size: 16px;
+       }
+    </style>
+    
+  </head>
+  <body>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+    	    <h3 id="title">Kaleidoscope</h3>
+          </td>
+          <td>
+    	    <img style="margin-left: 700px;" src="{{ static_url('SAVI-05.svg') }}" height="70%" />
+          </td>
+          <td>
+            <div style="visibility: hidden; margin-left:85%;" class="dropdown" id="name_logout">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+	  	<span id="screen_name"></span>   
+          	<span class="caret"></span>
+  	      </button>
+  	      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="index.html">Log out</a></li>
+  	      </ul>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+          <div id="stepsForSub">
+            <h3 style="font-size: 24px;">In order to start listening for video content, please setup your VLC player by following the steps shown below</h3>
+            <ol>
+              <li>Choose Media/Open Network Stream</li>
+              <li>In address, enter udp://@224.50.50.50:4444. Don’t forget to enter the “@” symbol after “udp://” and before the multicast ip address!</li>
+              <li>Click "Play"</li>
+            </ol>     
+            <p style="padding-top: 10%">Used reference to setup the VLC player: <a href="http://peakdrive.com/?p=440" target="_blank">http://peakdrive.com/?p=440</a></p>
+          </div>
+  </body>
+</html>
